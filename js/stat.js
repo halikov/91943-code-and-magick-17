@@ -63,8 +63,10 @@ window.renderStatistics = function (ctx, players, times) {
       ctx.fillStyle = 'rgba(255, 0, 0, 1)';
       ctx.fillRect(CLOUD_X + GAP * 2 + (BAR_GAP + BAR_WIDTH) * i, CLOUD_Y + GAP + (GAP + FONT_GAP) * 3 + BAR_HEIGHT - ((BAR_HEIGHT * times[i]) / maxTime), BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
     } else {
-      for (var saturation = 0; saturation < 50; saturation++) {
-        ctx.fillStyle = 'hsl(240,' + (100 - saturation) + '%' + ', 50%)';
+      for (var playerRectColor = 1; playerRectColor <= 3; playerRectColor++) {
+        var saturation = 20 * playerRectColor;
+        console.log(saturation);
+        ctx.fillStyle = 'hsl(240,' + (100 - Math.floor(Math.random() * saturation)) + '%' + ', 50%)';
       }
       ctx.fillRect(CLOUD_X + GAP * 2 + (BAR_GAP + BAR_WIDTH) * i, CLOUD_Y + GAP + (GAP + FONT_GAP) * 3 + BAR_HEIGHT - ((BAR_HEIGHT * times[i]) / maxTime), BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
     }
