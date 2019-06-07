@@ -5,10 +5,17 @@ var CLOUD_HEIGHT = 270;
 var CLOUD_X = 100;
 var CLOUD_Y = 10;
 var GAP = 10;
-var FONT_GAP = 16;
+var cloudPadding = GAP * 2;
+var FONT_GAP = 20;
+
 var BAR_HEIGHT = 150;
 var BAR_WIDTH = 40;
 var BAR_GAP = 50;
+var BAR_X = CLOUD_X + BAR_GAP;
+var BAR_Y = CLOUD_HEIGHT - (cloudPadding + GAP); // задает вехнюю точку столбца подсчетом от земли
+
+var playersNameMarginTop = CLOUD_HEIGHT - cloudPadding - GAP; // расположение по вертикали имени от земли
+var FONT = '16px PT Mono';
 
 var renderCloud = function (ctx, x, y, color) {
   ctx.fillStyle = color;
@@ -16,60 +23,45 @@ var renderCloud = function (ctx, x, y, color) {
 };
 
 var getMaxElement = function (arr) {
-  var maxElement = arr[0];
-
-  for (var i = 1; i < arr.length; i++) {
-    if (arr[i] > maxElement) {
-      maxElement = arr[i];
-    }
-  }
-
-  return maxElement;
+  return Math.max.apply(null, arr);
 };
 
-var getWinner = function (winner) {
-  var minElement = winner[0];
+var renderGreetingText = function (ctx, color, font, text, x, y) {
+  ctx.fillStyle = color;
+  ctx.font = font;
+  ctx.fillText(text, x, y);
+};
 
-  for (var i = 1; i < winner.length; i++) {
-    if (winner[i] < minElement) {
-      minElement = winner[i];
-    }
-  }
-
-  return minElement;
+var renderStatisticsBar = function (ctx, color, x, y, width, height) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, width, height);
 };
 
 window.renderStatistics = function (ctx, players, times) {
   renderCloud(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, 'rgba(0, 0, 0, 0.7)');
   renderCloud(ctx, CLOUD_X, CLOUD_Y, 'rgba(255, 255, 255, 1)');
+  ctx.textBaseline = 'hanging';
+  renderGreetingText(ctx, '#000', FONT, 'Ура вы победили!', CLOUD_X + cloudPadding, CLOUD_Y + cloudPadding);
+  ctx.textBaseline = 'hanging';
+  renderGreetingText(ctx, '#000', FONT, 'Список результатов:', CLOUD_X + cloudPadding, CLOUD_Y + cloudPadding + FONT_GAP);
 
   var maxTime = getMaxElement(times);
-  var minTime = getWinner(times);
 
-  for (var i = 0; i < players.length; i++) {
-    ctx.fillStyle = '#000';
-    ctx.font = '16px PT Mono';
-    if (players[i].indexOf('Вы') !== -1) {
-      if (times[i] === minTime) {
-        ctx.fillText('Ура вы победили!', CLOUD_X + GAP * 2, CLOUD_Y + (GAP + FONT_GAP) * 1);
-        ctx.fillText('Список результатов:', CLOUD_X + GAP * 2, CLOUD_Y + (GAP + FONT_GAP) * 2);
-      } else {
-        ctx.fillText('Увы вы проиграли!', CLOUD_X + GAP * 2, CLOUD_Y + (GAP + FONT_GAP) * 1);
-        ctx.fillText('Список результатов:', CLOUD_X + GAP * 2, CLOUD_Y + (GAP + FONT_GAP) * 2);
-      }
-    }
-    ctx.fillText(Math.round(times[i]), CLOUD_X + GAP * 2 + (BAR_GAP + BAR_WIDTH) * i, CLOUD_Y + (GAP + FONT_GAP) * 3 + (BAR_HEIGHT - (BAR_HEIGHT * times[i]) / maxTime));
-    if (players[i].indexOf('Вы') !== -1) {
-      ctx.fillStyle = 'rgba(255, 0, 0, 1)';
-      ctx.fillRect(CLOUD_X + GAP * 2 + (BAR_GAP + BAR_WIDTH) * i, CLOUD_Y + GAP + (GAP + FONT_GAP) * 3 + BAR_HEIGHT - ((BAR_HEIGHT * times[i]) / maxTime), BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
+  players.forEach(function (name, index) {
+    var barWidth = BAR_WIDTH;
+    var barHeight = (BAR_HEIGHT * times[index]) / maxTime;
+    var barPositionY = BAR_Y - barHeight;
+    var barPositionX = BAR_X + (BAR_WIDTH + BAR_GAP) * index;
+
+    if (name === ('Вы')) {
+      renderStatisticsBar(ctx, 'hsl(0, 100%, 50%)', barPositionX, barPositionY, barWidth, barHeight);
     } else {
-      for (var playerRectColor = 1; playerRectColor <= 3; playerRectColor++) {
-        var saturation = 20 * playerRectColor;
-        ctx.fillStyle = 'hsl(240, ' + (100 - Math.floor(Math.random() * saturation)) + '%' + ', 50%)';
-      }
-      ctx.fillRect(CLOUD_X + GAP * 2 + (BAR_GAP + BAR_WIDTH) * i, CLOUD_Y + GAP + (GAP + FONT_GAP) * 3 + BAR_HEIGHT - ((BAR_HEIGHT * times[i]) / maxTime), BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
+      renderStatisticsBar(ctx, 'hsl(240,' + Math.ceil(Math.random() * 100) + '%' + ', 50%)', barPositionX, barPositionY, barWidth, barHeight);
     }
+
     ctx.fillStyle = '#000';
-    ctx.fillText(players[i], CLOUD_X + GAP * 2 + (BAR_GAP + BAR_WIDTH) * i, CLOUD_Y + GAP + (GAP + FONT_GAP) * 3 + BAR_HEIGHT + GAP * 2);
-  }
+    ctx.textBaseline = 'hanging';
+    ctx.fillText(Math.round(times[index]), barPositionX, barPositionY - FONT_GAP);
+    ctx.fillText(name, BAR_X + (BAR_GAP + BAR_WIDTH) * index, playersNameMarginTop + GAP);
+  });
 };
