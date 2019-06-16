@@ -1,16 +1,58 @@
 'use strict';
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
-var showUserDialog = function () {
-  var userDialog = document.querySelector('.setup');
-  userDialog.classList.remove('hidden');
-  // можно открыть это. если нам потом понадобится обратиться к этому блоку, чтобы не писать путь к нему от его родителя.
-  // var setupSimilar = document.querySelector('.setup-similar');
-  // закрыть это. эта строчка экономит две (сверху и снизу) строчки. Если к setup-similar нам не нужно обращаться без setup.
-  userDialog.querySelector('.setup-similar').classList.remove('hidden');
-  // setupSimilar.classList.remove('hidden');
+var userDialog = document.querySelector('.setup');
+var setupOpen = document.querySelector('.setup-open');
+var setupClose = userDialog.querySelector('.setup-close');
+var setupSubmit = userDialog.querySelector('.setup-submit');
+// var userNameInput = userDialog.querySelector('.setup-user-name');
+
+// добавляет окну настройки персонажа класс hidden при нажатии ESC
+var onPopupESCPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    userDialog.classList.add('hidden');
+  }
 };
 
+// показывает окно настройки персонажа
+var showUserDialog = function () {
+  userDialog.classList.remove('hidden');
+  userDialog.querySelector('.setup-similar').classList.remove('hidden');
+  document.addEventListener('keydown', onPopupESCPress);
+};
+
+// скрывает окно настройки персонажа
+var hideUserDialog = function () {
+  userDialog.classList.add('hidden');
+  document.removeEventListener('keydown', onPopupESCPress);
+};
+
+setupOpen.addEventListener('click', function () {
+  showUserDialog();
+});
+
+// при нажатии ENTER аватарку пользователя удаляет класс hidden окна настройки персонажа
+setupOpen.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    showUserDialog();
+  }
+});
+
+// при клике на крестике добавляет класс hidden окну настройки персонажа
+setupClose.addEventListener('click', function () {
+  hideUserDialog();
+});
+
+// при нажатии ENTER на крестике добавляет класс hidden окну настройки персонажа
+setupClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    hideUserDialog();
+  }
+});
+
+// возварщает случайное число от min до max
 var getRandom = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -67,5 +109,18 @@ var renderAllWizards = function () {
   similarListElement.appendChild(fragment);
 };
 
+// userNameInput.addEventListener('invalid', function (evt) {
+//   if (userNameInput.validity.tooShort) {
+//     userNameInput.setCustomValidity('Имя должно состоять минимум из двух символов');
+//   } else if (userNameInput.validity.tooLong) {
+//     userNameInput.setCustomValidity('Имя не должно превышать 25-ти символов');
+//   } else if (userNameInput.validity.valueMissing) {
+//     userNameInput.setCustomValidity('Обязательное поле');
+//   } else {
+//     userNameInput.setCustomValidity('');
+//   }
+// });
+
 renderAllWizards();
-showUserDialog();
+// showUserDialog();
+// hideUserDialog();
