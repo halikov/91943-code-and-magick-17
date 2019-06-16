@@ -2,13 +2,24 @@
 
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
+var eyeColors = ['black', 'red', 'blue', 'yellow', 'green'];
+var fireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 
 var userDialog = document.querySelector('.setup');
 var setupOpen = document.querySelector('.setup-open');
 var setupClose = userDialog.querySelector('.setup-close');
-var setupSubmit = userDialog.querySelector('.setup-submit');
-// var userNameInput = userDialog.querySelector('.setup-user-name');
+// var setupSubmit = userDialog.querySelector('.setup-submit');
+var userNameInput = userDialog.querySelector('.setup-user-name');
 
+var setupWizard = document.querySelector('.setup-wizard');
+var wizardCoat = setupWizard.querySelector('.wizard-coat');
+var wizardCoatHiddenInput = document.querySelector('[name="coat-color"]');
+var wizardEyesHiddenInput = document.querySelector('[name="eyes-color"]');
+var wizardEyes = setupWizard.querySelector('.wizard-eyes');
+var fireballsWrap = document.querySelector('.setup-fireball-wrap');
+var fireball = fireballsWrap.querySelector('.setup-fireball');
+var fireballHiddenInput = fireballsWrap.querySelector('[name="fireball-color"]');
 // добавляет окну настройки персонажа класс hidden при нажатии ESC
 var onPopupESCPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
@@ -57,6 +68,51 @@ var getRandom = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+// проверяет на валидность введенных данных в поле ввода
+userNameInput.addEventListener('invalid', function () {
+  if (userNameInput.validity.tooShort) {
+    userNameInput.setCustomValidity('Имя должно состоять минимум из двух символов');
+  } else if (userNameInput.validity.tooLong) {
+    userNameInput.setCustomValidity('Имя не должно превышать 25-ти символов');
+  } else if (userNameInput.validity.valueMissing) {
+    userNameInput.setCustomValidity('Обязательное поле');
+  } else {
+    userNameInput.setCustomValidity('');
+  }
+});
+
+// изменяет цвет мантии при клике мантию
+wizardCoat.addEventListener('click', function () {
+  wizardCoat.style.fill = coatColors[getRandom(0, (coatColors.length - 1))];
+  wizardCoatHiddenInput.value = wizardCoat.style.fill;
+});
+
+// изменяет цвет глаз при клике на глаза
+wizardEyes.addEventListener('click', function () {
+  wizardEyes.style.fill = eyeColors[getRandom(0, (eyeColors.length - 1))];
+  wizardEyesHiddenInput.value = wizardEyes.style.fill;
+});
+
+// цвет fireball
+fireball.addEventListener('click', function () {
+  fireballsWrap.style.background = fireballColors[getRandom(0, (fireballColors.length - 1))];
+  fireballHiddenInput.value = fireballsWrap.style.background;
+});
+
+// проверка длины имени персонажа и вывод соответствующего предупреждения
+userNameInput.addEventListener('input', function (evt) {
+  var target = evt.target;
+  if (target.value.length < 2) {
+    target.setCustomValidity('Имя персонажа должно состоять минимум из 2-х символов');
+  } else if (target.value.length > 25) {
+    target.setCustomValidity('Имя персонажа не должно превышать 25-ти символов');
+  } else {
+    target.setCustomValidity('');
+  }
+});
+
+// отрисовка персонажа
+// составляет массив имен персонажа из массивов имён и фамилий
 var getUserNames = function () {
   var firstNames = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
   var secondNames = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
@@ -69,8 +125,6 @@ var getUserNames = function () {
 };
 
 var getWizards = function () {
-  var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
-  var eyeColors = ['black', 'red', 'blue', 'yellow', 'green'];
   var names = getUserNames();
 
   var wizards = [];
@@ -108,18 +162,6 @@ var renderAllWizards = function () {
   });
   similarListElement.appendChild(fragment);
 };
-
-// userNameInput.addEventListener('invalid', function (evt) {
-//   if (userNameInput.validity.tooShort) {
-//     userNameInput.setCustomValidity('Имя должно состоять минимум из двух символов');
-//   } else if (userNameInput.validity.tooLong) {
-//     userNameInput.setCustomValidity('Имя не должно превышать 25-ти символов');
-//   } else if (userNameInput.validity.valueMissing) {
-//     userNameInput.setCustomValidity('Обязательное поле');
-//   } else {
-//     userNameInput.setCustomValidity('');
-//   }
-// });
 
 renderAllWizards();
 // showUserDialog();
