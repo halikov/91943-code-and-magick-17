@@ -122,8 +122,9 @@ var getUserNames = function () {
   var firstNames = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
   var secondNames = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
   var userNames = [];
-  for (var i = 1; i < firstNames.length; i++) {
-    userNames.push(firstNames[getRandom(1, firstNames.length - 1)] + ' ' + secondNames[getRandom(1, secondNames.length - 1)]);
+  for (var i = 0; i < firstNames.length; i++) {
+    // userNames.push(firstNames[getRandom(1, firstNames.length - 1)] + ' ' + secondNames[getRandom(1, secondNames.length - 1)]);
+    userNames.push(getRandomArrayElement(firstNames) + ' ' + getRandomArrayElement(secondNames));
   }
 
   return userNames;
@@ -137,8 +138,8 @@ var getWizards = function () {
   for (var i = 0; i < 4; i++) {
     wizards.push({
       name: names[i],
-      coatColor: coatColors[getRandom(1, (coatColors.length - 1))],
-      eyeColor: eyeColors[getRandom(1, (eyeColors.length - 1))]
+      coatColor: getRandomArrayElement(coatColors), // coatColors[getRandom(1, (coatColors.length - 1))],
+      eyeColor: getRandomArrayElement(eyeColors) // eyeColors[getRandom(1, (eyeColors.length - 1))]
     });
   }
   return wizards;
