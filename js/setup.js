@@ -22,7 +22,7 @@ var fireball = fireballsWrap.querySelector('.setup-fireball');
 var fireballHiddenInput = fireballsWrap.querySelector('[name="fireball-color"]');
 // добавляет окну настройки персонажа класс hidden при нажатии ESC
 var onPopupESCPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
+  if (evt.keyCode === ESC_KEYCODE && document.activeElement !== document.querySelector('.setup-user-name')) {
     userDialog.classList.add('hidden');
   }
 };
@@ -68,6 +68,10 @@ var getRandom = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+var getRandomArrayElement = function (someArray) {
+  return someArray[getRandom(0, (someArray.length - 1))];
+};
+
 // проверяет на валидность введенных данных в поле ввода
 userNameInput.addEventListener('invalid', function () {
   if (userNameInput.validity.tooShort) {
@@ -83,20 +87,21 @@ userNameInput.addEventListener('invalid', function () {
 
 // изменяет цвет мантии при клике мантию
 wizardCoat.addEventListener('click', function () {
-  wizardCoat.style.fill = coatColors[getRandom(0, (coatColors.length - 1))];
+  wizardCoat.style.fill = getRandomArrayElement(coatColors);
   wizardCoatHiddenInput.value = wizardCoat.style.fill;
 });
 
 // изменяет цвет глаз при клике на глаза
 wizardEyes.addEventListener('click', function () {
-  wizardEyes.style.fill = eyeColors[getRandom(0, (eyeColors.length - 1))];
+  wizardEyes.style.fill = getRandomArrayElement(eyeColors);
   wizardEyesHiddenInput.value = wizardEyes.style.fill;
 });
 
 // цвет fireball
 fireball.addEventListener('click', function () {
-  fireballsWrap.style.background = fireballColors[getRandom(0, (fireballColors.length - 1))];
-  fireballHiddenInput.value = fireballsWrap.style.background;
+  var fireballColor = getRandomArrayElement(fireballColors);
+  fireballsWrap.style.background = fireballColor;
+  fireballHiddenInput.value = fireballColor;
 });
 
 // проверка длины имени персонажа и вывод соответствующего предупреждения
