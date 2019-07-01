@@ -1,12 +1,10 @@
 'use strict';
 
 (function () {
-  var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
-  var eyeColors = ['black', 'red', 'blue', 'yellow', 'green'];
-  var fireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 
   var userNameInput = document.querySelector('.setup-user-name');
 
+  var setup = document.querySelector('.setup');
   var setupWizard = document.querySelector('.setup-wizard');
   var wizardCoat = setupWizard.querySelector('.wizard-coat');
   var wizardCoatHiddenInput = document.querySelector('[name="coat-color"]');
@@ -43,52 +41,24 @@
 
   // изменяет цвет мантии при клике мантию
   wizardCoat.addEventListener('click', function () {
-    wizardCoat.style.fill = window.util.getRandomArrayElement(coatColors);
+    // wizardCoat.style.fill = window.util.getRandomArrayElement(colorCoat);
     wizardCoatHiddenInput.value = wizardCoat.style.fill;
   });
 
   // изменяет цвет глаз при клике на глаза
   wizardEyes.addEventListener('click', function () {
-    wizardEyes.style.fill = window.util.getRandomArrayElement(eyeColors);
+    // wizardEyes.style.fill = window.util.getRandomArrayElement(colorEye);
     wizardEyesHiddenInput.value = wizardEyes.style.fill;
   });
 
   // цвет fireball
   fireball.addEventListener('click', function () {
-    var fireballColor = window.util.getRandomArrayElement(fireballColors);
-    fireballsWrap.style.background = fireballColor;
-    fireballHiddenInput.value = fireballColor;
+    var colorFireball = window.util.getRandomArrayElement(colorFireball);
+    fireballsWrap.style.background = colorFireball;
+    fireballHiddenInput.value = colorFireball;
   });
 
-  // отрисовка персонажа
-  // составляет массив имен персонажа из массивов имён и фамилий
-  var getUserNames = function () {
-    var firstNames = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
-    var secondNames = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
-    var userNames = [];
-    for (var i = 0; i < firstNames.length; i++) {
-      userNames.push(window.util.getRandomArrayElement(firstNames) + ' ' + window.util.getRandomArrayElement(secondNames));
-    }
-
-    return userNames;
-  };
-
-  var getWizards = function () {
-    var names = getUserNames();
-
-    var wizards = [];
-
-    for (var i = 0; i < 4; i++) {
-      wizards.push({
-        name: names[i],
-        coatColor: window.util.getRandomArrayElement(coatColors),
-        eyeColor: window.util.getRandomArrayElement(eyeColors)
-      });
-    }
-    return wizards;
-  };
-  var wizardsList = getWizards();
-
+  var similarListElement = document.querySelector('.setup-similar-list');
   var renderWizard = function (wizard) {
     var similarWizardTemplate = document.querySelector('#similar-wizard-template')
       .content
@@ -96,21 +66,41 @@
     var wizardElement = similarWizardTemplate.cloneNode(true);
 
     wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill = wizard.coatColor;
-    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.eyeColor;
+    wizardElement.querySelector('.wizard-coat').style.fill = wizard.colorCoat;
+    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.colorEye;
 
     return wizardElement;
   };
 
-  var renderAllWizards = function () {
-    var similarListElement = document.querySelector('.setup-similar-list');
+  var successHandler = function (wizards) {
     var fragment = document.createDocumentFragment();
-
-    wizardsList.forEach(function (item) {
-      fragment.appendChild(renderWizard(item));
-    });
+    for (var i = 0; i < 4; i++) {
+      fragment.appendChild(renderWizard(wizards[i]));
+    }
     similarListElement.appendChild(fragment);
+    setup.querySelector('.setup-similar').classList.remove('hidden');
   };
 
-  renderAllWizards();
+  var errorHandler = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  };
+
+  window.load(successHandler, errorHandler);
+
+  var form = setup.querySelector('.setup-wizard-form');
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.save(new FormData(form), function (response) {
+      setup.classList.add('hidden');
+    }, errorHandler);
+  });
+
 })();
