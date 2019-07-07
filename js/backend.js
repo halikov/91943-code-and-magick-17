@@ -20,8 +20,8 @@
       onError('Произошла ошибка соединения');
     });
 
-    xhr.addEventListener('timout', function () {
-      onError('Запрос не успел выполнться за ' + xhr.timout + 'мс');
+    xhr.addEventListener('timeout', function () {
+      onError('Запрос не успел выполнться за ' + xhr.timeout + 'мс');
     });
 
     xhr.timeout = 10000; // 10s
@@ -46,8 +46,8 @@
       onError('Произошла ошибка соединения');
     });
 
-    xhr.addEventListener('timout', function () {
-      onError('Запрос не успел выполнться за ' + xhr.timout + 'мс');
+    xhr.addEventListener('timeout', function () {
+      onError('Запрос не успел выполнться за ' + xhr.timeout + 'мс');
     });
 
     xhr.timeout = 10000; // 10s
